@@ -24,6 +24,8 @@ import * as google from '../../src/ai-providers/google.js';
 import * as openai from '../../src/ai-providers/openai.js';
 import * as xai from '../../src/ai-providers/xai.js';
 import * as openrouter from '../../src/ai-providers/openrouter.js';
+import * as vertex from '../../src/ai-providers/vertex.js';
+import * as vertexClaude from '../../src/ai-providers/vertex-claude.js';
 // TODO: Import other provider modules when implemented (ollama, etc.)
 
 // --- Provider Function Map ---
@@ -62,6 +64,18 @@ const PROVIDER_FUNCTIONS = {
 		generateText: openrouter.generateOpenRouterText,
 		streamText: openrouter.streamOpenRouterText,
 		generateObject: openrouter.generateOpenRouterObject
+	},
+	vertex: {
+		// ADD: Vertex AI entry
+		generateText: vertex.generateVertexText,
+		streamText: vertex.streamVertexText,
+		generateObject: vertex.generateVertexObject
+	},
+	'vertex-claude': {
+		// ADD: Vertex AI Claude entry
+		generateText: vertexClaude.generateVertexClaudeText,
+		streamText: vertexClaude.streamVertexClaudeText,
+		generateObject: vertexClaude.generateVertexClaudeObject
 	}
 	// TODO: Add entries for ollama, etc. when implemented
 };
@@ -152,10 +166,10 @@ function _resolveApiKey(providerName, session, projectRoot = null) {
 		xai: 'XAI_API_KEY'
 	};
 
-	// Double check this -- I have had to use an api key for ollama in the past
-	// if (providerName === 'ollama') {
-	// 	return null; // Ollama typically doesn't require an API key for basic setup
-	// }
+	// Providers that don't require API keys
+	if (providerName === 'ollama' || providerName === 'vertex' || providerName === 'vertex-claude') {
+		return null; // These providers don't require an API key for basic setup
+	}
 
 	const envVarName = keyMap[providerName];
 	if (!envVarName) {
@@ -254,11 +268,15 @@ async function _unifiedServiceRunner(serviceType, params) {
 		prompt,
 		schema,
 		objectName,
+		providerOverride, // Add support for provider override
+		modelIdOverride,  // Add support for model ID override
 		...restApiParams
 	} = params;
 	log('info', `${serviceType}Service called`, {
 		role: initialRole,
-		projectRoot
+		projectRoot,
+		providerOverride: providerOverride || 'none',
+		modelIdOverride: modelIdOverride || 'none'
 	});
 
 	// Determine the effective project root (passed in or detected)
@@ -292,14 +310,14 @@ async function _unifiedServiceRunner(serviceType, params) {
 			// 1. Get Config: Provider, Model, Parameters for the current role
 			// Pass effectiveProjectRoot to config getters
 			if (currentRole === 'main') {
-				providerName = getMainProvider(effectiveProjectRoot);
-				modelId = getMainModelId(effectiveProjectRoot);
+				providerName = providerOverride || getMainProvider(effectiveProjectRoot);
+				modelId = modelIdOverride || getMainModelId(effectiveProjectRoot);
 			} else if (currentRole === 'research') {
-				providerName = getResearchProvider(effectiveProjectRoot);
-				modelId = getResearchModelId(effectiveProjectRoot);
+				providerName = providerOverride || getResearchProvider(effectiveProjectRoot);
+				modelId = modelIdOverride || getResearchModelId(effectiveProjectRoot);
 			} else if (currentRole === 'fallback') {
-				providerName = getFallbackProvider(effectiveProjectRoot);
-				modelId = getFallbackModelId(effectiveProjectRoot);
+				providerName = providerOverride || getFallbackProvider(effectiveProjectRoot);
+				modelId = modelIdOverride || getFallbackModelId(effectiveProjectRoot);
 			} else {
 				log(
 					'error',

@@ -2137,6 +2137,10 @@ function registerCommands(programInstance) {
 			'--ollama',
 			'Allow setting a custom Ollama model ID (use with --set-*) '
 		)
+		.option(
+			'--vertex-claude',
+			'Allow setting a Vertex AI Claude model ID (use with --set-*) '
+		)
 		.addHelpText(
 			'after',
 			`

@@ -437,9 +437,11 @@ function getParametersForRole(role, explicitRoot = null) {
  * @returns {boolean} True if the API key is set, false otherwise.
  */
 function isApiKeySet(providerName, session = null, projectRoot = null) {
-	// Define the expected environment variable name for each provider
-	if (providerName?.toLowerCase() === 'ollama') {
-		return true; // Indicate key status is effectively "OK"
+	// Providers that don't require API keys
+	if (providerName?.toLowerCase() === 'ollama' || 
+	    providerName?.toLowerCase() === 'vertex' ||
+	    providerName?.toLowerCase() === 'vertex-claude') {
+		return true; // These providers don't require an API key for basic setup
 	}
 
 	const keyMap = {
@@ -504,6 +506,11 @@ function getMcpApiKeyStatus(providerName, projectRoot = null) {
 			return false; // Structure missing
 		}
 
+		// Providers that don't require API keys
+		if (providerName === 'ollama' || providerName === 'vertex' || providerName === 'vertex-claude') {
+			return true; // These providers don't require an API key
+		}
+
 		let apiKeyToCheck = null;
 		let placeholderValue = null;
 
@@ -532,8 +539,6 @@ function getMcpApiKeyStatus(providerName, projectRoot = null) {
 				apiKeyToCheck = mcpEnv.XAI_API_KEY;
 				placeholderValue = 'YOUR_XAI_API_KEY_HERE';
 				break;
-			case 'ollama':
-				return true; // No key needed
 			case 'mistral':
 				apiKeyToCheck = mcpEnv.MISTRAL_API_KEY;
 				placeholderValue = 'YOUR_MISTRAL_API_KEY_HERE';

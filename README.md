@@ -13,6 +13,7 @@ A task management system for AI-driven development with Claude, designed to work
 
 - Anthropic API key (Claude API)
 - OpenAI SDK (for Perplexity API integration, optional)
+- Google Cloud Platform account (for Vertex AI Claude integration, optional)
 
 ## Quick Start
 
@@ -36,7 +37,9 @@ MCP (Model Control Protocol) provides the easiest way to get started with Task M
 				"MISTRAL_API_KEY": "YOUR_MISTRAL_KEY_HERE",
 				"OPENROUTER_API_KEY": "YOUR_OPENROUTER_KEY_HERE",
 				"XAI_API_KEY": "YOUR_XAI_KEY_HERE",
-				"AZURE_OPENAI_API_KEY": "YOUR_AZURE_KEY_HERE"
+				"AZURE_OPENAI_API_KEY": "YOUR_AZURE_KEY_HERE",
+				"VERTEX_PROJECT_ID": "your-gcp-project-id",
+				"VERTEX_LOCATION": "us-central1"
 			}
 		}
 	}
@@ -112,6 +115,7 @@ For more detailed information, check out the documentation in the `docs` directo
 - [Command Reference](docs/command-reference.md) - Complete list of all available commands
 - [Task Structure](docs/task-structure.md) - Understanding the task format and features
 - [Example Interactions](docs/examples.md) - Common Cursor AI interaction examples
+- [Vertex AI Setup](docs/vertex-ai-setup.md) - Guide for setting up and using Vertex AI Claude integration
 
 ## Troubleshooting
 

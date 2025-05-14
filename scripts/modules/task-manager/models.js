@@ -386,7 +386,7 @@ async function setModel(role, modelId, options = {}) {
 		// --- Revised Logic: Prioritize providerHint --- //
 
 		if (providerHint) {
-			// Hint provided (--ollama or --openrouter flag used)
+			// Hint provided (--ollama, --openrouter, or --vertex-claude flag used)
 			if (modelData && modelData.provider === providerHint) {
 				// Found internally AND provider matches the hint
 				determinedProvider = providerHint;
@@ -419,6 +419,11 @@ async function setModel(role, modelId, options = {}) {
 					// Hinted as Ollama - set provider directly WITHOUT checking OpenRouter
 					determinedProvider = 'ollama';
 					warningMessage = `Warning: Custom Ollama model '${modelId}' set. Ensure your Ollama server is running and has pulled this model. Taskmaster cannot guarantee compatibility.`;
+					report('warn', warningMessage);
+				} else if (providerHint === 'vertex-claude') {
+					// Hinted as Vertex Claude - set provider directly
+					determinedProvider = 'vertex-claude';
+					warningMessage = `Warning: Vertex AI Claude model '${modelId}' set. Ensure you have set up Google Cloud authentication and the VERTEX_PROJECT_ID and VERTEX_LOCATION environment variables.`;
 					report('warn', warningMessage);
 				} else {
 					// Invalid provider hint - should not happen
